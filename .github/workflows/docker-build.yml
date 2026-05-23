@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - '**'   # Run on ALL branches automatically
+      - '**'   # Run on ALL branches
 
 jobs:
   build:
@@ -23,13 +23,12 @@ jobs:
       - name: Prepare variables
         id: vars
         run: |
-          # Lowercase repo owner (your username)
+          # Lowercase repo owner (your new username)
           OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
 
           # Sanitize branch name (replace / with - and lowercase)
           BRANCH=$(echo "${GITHUB_REF_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
 
-          # Set outputs
           echo "OWNER=$OWNER" >> $GITHUB_OUTPUT
           echo "BRANCH_NAME=$BRANCH" >> $GITHUB_OUTPUT
 
