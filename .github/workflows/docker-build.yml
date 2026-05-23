@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - '**'   # Run on ALL branches
+      
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
@@ -34,17 +38,17 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}"
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-analysis:${{ steps.vars.outputs.BRANCH_NAME }}"
           docker build -t $IMAGE .
 
       - name: Push Docker image
         run: |
-          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}"
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-analysis:${{ steps.vars.outputs.BRANCH_NAME }}"
           docker push $IMAGE
 
       - name: Tag and push production image (master only)
         if: github.ref == 'refs/heads/master'
         run: |
-          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api"
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-analysis"
           docker tag $IMAGE:${{ steps.vars.outputs.BRANCH_NAME }} $IMAGE:latest
           docker push $IMAGE:latest
