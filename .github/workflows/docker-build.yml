@@ -23,7 +23,7 @@ jobs:
       - name: Prepare variables
         id: vars
         run: |
-          # Lowercase repo owner (your new username)
+          # Lowercase repo owner (your username)
           OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
 
           # Sanitize branch name (replace / with - and lowercase)
