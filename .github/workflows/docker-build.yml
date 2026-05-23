@@ -17,30 +17,35 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set owner manually
+      - name: Prepare variables
         id: vars
         run: |
-          echo "OWNER=aadilmohammad-da" >> $GITHUB_OUTPUT
-          SANITIZED_BRANCH=$(echo "${GITHUB_REF_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
-          echo "BRANCH_NAME=$SANITIZED_BRANCH" >> $GITHUB_OUTPUT
+          # Lowercase repo owner (your username)
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
 
-      - name: Build image
+          # Sanitize branch name (replace / with - and lowercase)
+          BRANCH=$(echo "${GITHUB_REF_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
+
+          # Set outputs
+          echo "OWNER=$OWNER" >> $GITHUB_OUTPUT
+          echo "BRANCH_NAME=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} .
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}"
+          docker build -t $IMAGE .
 
-
-      - name: Push image
+      - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}"
+          docker push $IMAGE
 
-
-      - name: Tag and push production image
+      - name: Tag and push production image (master only)
         if: github.ref == 'refs/heads/master'
         run: |
-          docker tag ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} \
-                    ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:latest
-          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:latest
-
+          IMAGE="ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api"
+          docker tag $IMAGE:${{ steps.vars.outputs.BRANCH_NAME }} $IMAGE:latest
+          docker push $IMAGE:latest
