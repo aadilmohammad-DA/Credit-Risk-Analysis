@@ -29,18 +29,18 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} .
+          docker build -t ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} .
 
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}
+          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }}
 
 
       - name: Tag and push production image
         if: github.ref == 'refs/heads/master'
         run: |
-          docker tag ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} \
-                    ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:latest
-          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:latest
+          docker tag ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} \
+                    ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:latest
+          docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api/credit-risk-api:latest
 
