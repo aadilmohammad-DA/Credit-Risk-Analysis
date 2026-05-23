@@ -20,17 +20,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sanitize names
+      - name: Set owner manually
         id: vars
         run: |
+          echo "OWNER=aadilmohammad-da" >> $GITHUB_OUTPUT
           SANITIZED_BRANCH=$(echo "${GITHUB_REF_NAME}" | tr '/' '-' | tr '[:upper:]' '[:lower:]')
-          SANITIZED_OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
           echo "BRANCH_NAME=$SANITIZED_BRANCH" >> $GITHUB_OUTPUT
-          echo "OWNER=$SANITIZED_OWNER" >> $GITHUB_OUTPUT
 
       - name: Build image
         run: |
           docker build -t ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} .
+
 
       - name: Push image
         run: |
@@ -43,3 +43,4 @@ jobs:
           docker tag ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:${{ steps.vars.outputs.BRANCH_NAME }} \
                     ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:latest
           docker push ghcr.io/${{ steps.vars.outputs.OWNER }}/credit-risk-api:latest
+
